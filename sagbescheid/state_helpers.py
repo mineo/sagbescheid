@@ -9,6 +9,14 @@ def is_failure(state):
     return state == State.failed
 
 
+def is_normal_start(old, new):
+    return old != State.failed and new == State.active
+
+
+def is_normal_stop(old, new):
+    return old != State.failed and new == State.inactive
+
+
 def is_ongoing_failure(old, new):
     return old == State.failed and new == State.failed
 
