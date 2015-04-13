@@ -71,20 +71,20 @@ class Unit(object):
     def onSignal(self, iface, changed, invalidated):
         if iface == UNIT_IFACE:
             if "ActiveState" in changed:
-                newstate = State[changed["ActiveState"]]
+                new_state = State[changed["ActiveState"]]
             else:
                 return
-            if newstate == State.failed:
+            if new_state == State.failed:
                 if self.state != State.failed:
                     self._log("has failed")
                 else:
                     self._log("is still in failed state")
-                self.state = newstate
-            elif newstate == State.activating:
+                self.state = new_state
+            elif new_state == State.activating:
                 self._log("is starting")
-            elif (newstate == State.active and self.state == State.failed):
+            elif (new_state == State.active and self.state == State.failed):
                 self._log("has recovered")
-                self.state = newstate
+                self.state = new_state
 
 
 @defer.inlineCallbacks
