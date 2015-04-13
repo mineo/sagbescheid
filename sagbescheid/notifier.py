@@ -12,8 +12,8 @@ class INotifier(Interface):
     def state_changed(unit, old_state, new_state):
         """
         :type unit: str
-        :type old_state: :class:`sagbescheid.sagbescheid.State`
-        :type new_state: :class:`sagbescheid.sagbescheid.State`
+        :type old_state: :class:`sagbescheid.state.State`
+        :type new_state: :class:`sagbescheid.state.State`
         """
 
 

@@ -19,8 +19,8 @@ class LoggingNotifier(object):
     def state_changed(self, unit, old_state, new_state):
         """
         :type unit: str
-        :type old_state: :class:`sagbescheid.sagbescheid.State`
-        :type new_state: :class:`sagbescheid.sagbescheid.State`
+        :type old_state: :class:`sagbescheid.state.State`
+        :type new_state: :class:`sagbescheid.state.State`
         """
         if state_helpers.is_ongoing_failure(old_state, new_state):
             logging.info("%s is still failing.", unit)
