@@ -70,10 +70,12 @@ class Unit(object):
 
     def onSignal(self, iface, changed, invalidated):
         if iface == UNIT_IFACE:
-            if "ActiveState" in changed:
-                new_state = State[changed["ActiveState"]]
-            else:
+            new_raw_state = changed.get("ActiveState", None)
+
+            if new_raw_state is None:
                 return
+
+            new_state = State[new_raw_state]
             if new_state == State.failed:
                 if self.state != State.failed:
                     self._log("has failed")
