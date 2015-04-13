@@ -6,7 +6,7 @@ import argparse
 import logging
 
 from .notifier import INotifier, NotifierRegistry
-from .unit import Unit
+from .unit import get_all_unit_paths, Unit
 from . import notifiers
 from functools import partial
 from operator import attrgetter
@@ -17,27 +17,28 @@ from txdbus import client
 
 
 @defer.inlineCallbacks
-def setup(enabled_notifiers, units):
-    """Add each ``notifier`` to a notifier registry.
-
-    For each unit in ``units``, setup a :class:`Unit` object that connects to
-    its ``PropertiesChanged`` signal.
-
-    :type notifiers: [str]
-    :type units: [str]
+def setup(args):
+    """
+    :type args: :class:`argparse.Namespace`
     """
     con = yield client.connect(reactor, "system")
     available_notifiers = getPlugins(INotifier, notifiers)
     available_notifier_name_map = {n.name: n for n in available_notifiers}
     notifiers_to_activate = []
 
-    for notifier in enabled_notifiers:
+    for notifier in args.notifier:
         notifier_plugin = available_notifier_name_map[notifier]
         notifiers_to_activate.append(notifier_plugin)
 
     registry = NotifierRegistry(notifiers_to_activate)
-    for unit in units:
-        Unit(unit, registry).connect(con)
+    if args.all_units:
+        # Get the names of all units
+        units = yield get_all_unit_paths(con)
+        for unit in units:
+            yield Unit.from_child_object_path(unit, registry).connect(con)
+    else:
+        for unit in args.unit:
+            Unit.from_unit_filename(unit, registry).connect(con)
 
 
 def main():
@@ -50,10 +51,12 @@ def main():
                               getPlugins(INotifier, notifiers))
     parser.add_argument("--notifier", action="append", default=[],
                         choices=available_notifiers)
-    parser.add_argument("--unit", action="append")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--unit", action="append")
+    group.add_argument("--all-units", action="store_true", default=False)
     args = parser.parse_args()
 
-    reactor.callWhenRunning(partial(setup, args.notifier, args.unit))
+    reactor.callWhenRunning(partial(setup, args))
     reactor.run()
 
 if __name__ == "__main__":
