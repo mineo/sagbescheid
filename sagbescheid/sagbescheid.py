@@ -52,7 +52,7 @@ def main():
                                               notifier.name)
         notifier.add_arguments(arg_group)
     args = parser.parse_args()
-    for notifier in available_notifiers:
+    for notifier in get_enabled_notifiers(args.notifier):
         notifier.handle_arguments(args)
 
     reactor.callWhenRunning(partial(setup, args))
