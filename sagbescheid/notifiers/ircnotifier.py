@@ -42,6 +42,10 @@ class IRCNotifierBot(IRCClient):
             self._msg_channel("%s entered failed state." % unit)
         elif state_helpers.is_recovery(old_state, new_state):
             self._msg_channel("%s recovered." % unit)
+        elif state_helpers.is_normal_stop(old_state, new_state):
+            self._msg_channel("%s stopped normally" % unit)
+        elif state_helpers.is_normal_start(old_state, new_state):
+            self._msg_channel("%s started normally" % unit)
 
 
 @implementer(IPlugin, INotifier)
