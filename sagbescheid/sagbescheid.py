@@ -20,7 +20,7 @@ def setup(args):
     :type args: :class:`argparse.Namespace`
     """
     con = yield client.connect(reactor, "system")
-    registry = NotifierRegistry(get_enabled_notifiers(args))
+    registry = NotifierRegistry(get_enabled_notifiers(args.notifier))
     if args.all_units:
         # Get the names of all units
         units = yield get_all_unit_paths(con)
