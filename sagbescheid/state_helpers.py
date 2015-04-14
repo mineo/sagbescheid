@@ -23,3 +23,9 @@ def is_ongoing_failure(old, new):
 
 def is_recovery(old, new):
     return old == State.failed and new == State.active
+
+
+def is_change_from_unknown(old, new):
+    return old == State.unknown and (new == State.inactive or
+                                     new == State.active or
+                                     new == State.failed)

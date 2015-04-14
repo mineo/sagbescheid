@@ -86,7 +86,8 @@ class Unit(object):
             if (state_helpers.is_failure(new_state) or
                 state_helpers.is_recovery(self.state, new_state) or
                 state_helpers.is_normal_start(self.state, new_state) or
-                state_helpers.is_normal_stop(self.state, new_state)):
+                state_helpers.is_normal_stop(self.state, new_state) or
+                state_helpers.is_change_from_unknown(self.state, new_state)):
                 self.state = new_state
 
 
