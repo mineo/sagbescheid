@@ -3,6 +3,7 @@
 # Copyright © 2015 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 from ..notifier import INotifier
+from ..version import __version__
 from .. import state_helpers
 from twisted.internet import protocol, reactor
 from twisted.plugin import IPlugin
@@ -11,6 +12,10 @@ from zope.interface.declarations import implementer
 
 
 class IRCNotifierBot(IRCClient):
+    versionName = "sagbescheid"
+    versionNum = __version__
+    lineRate = 1
+
     @property
     def nickname(self):
         return self.factory.nick
