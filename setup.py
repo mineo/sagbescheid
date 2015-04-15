@@ -106,4 +106,7 @@ setup(name="sagbescheid",
                         "txdbus==1.0.11",
                         "zope.interface==4.1.2",
                         "enum34==1.0.4"],
+      extras_require={
+          'docs': ['sphinx', 'sphinxcontrib-autoprogram']
+          }
       )

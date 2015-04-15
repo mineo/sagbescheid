@@ -31,26 +31,35 @@ def setup(args):
             Unit.from_unit_filename(unit, registry).connect(con)
 
 
-def main():
-    observer = log.PythonLoggingObserver(loggerName="")
-    observer.start()
-    logging.basicConfig(level=logging.INFO)
-
-    parser = argparse.ArgumentParser(fromfile_prefix_chars='@')
+def build_arg_parser():
+    parser = argparse.ArgumentParser(prog='sagbescheid',
+                                     fromfile_prefix_chars='@')
     available_notifiers = list(get_all_notifiers())
     available_notifier_names = map(attrgetter("name"),
                                    available_notifiers)
     parser.add_argument("--notifier", action="append", default=[],
-                        choices=available_notifier_names)
+                        choices=available_notifier_names,
+                        help="A notifier to enable.")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--unit", action="append")
-    group.add_argument("--all-units", action="store_true", default=False)
+    group.add_argument("--unit", action="append",
+                       help="A unit to monitor.")
+    group.add_argument("--all-units", action="store_true", default=False,
+                       help="Monitor all units.")
 
     for notifier in available_notifiers:
         arg_group = parser.add_argument_group(notifier.name,
                                               "Arguments for the %s notifier" %
                                               notifier.name)
         notifier.add_arguments(arg_group)
+    return parser
+
+
+def main():
+    observer = log.PythonLoggingObserver(loggerName="")
+    observer.start()
+    logging.basicConfig(level=logging.INFO)
+
+    parser = build_arg_parser()
     args = parser.parse_args()
     for notifier in get_enabled_notifiers(args.notifier):
         notifier.handle_arguments(args)

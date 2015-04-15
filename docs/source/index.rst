@@ -1,5 +1,5 @@
 Welcome to sagbescheid's documentation!
-================================
+=======================================
 
 Contents:
 
@@ -7,12 +7,7 @@ Contents:
    :maxdepth: 2
 
    setup
-
-API:
-
-.. toctree::
-
-    sagbescheid
+   usage
 
 Indices and tables
 ==================
@@ -20,4 +15,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
