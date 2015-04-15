@@ -102,5 +102,9 @@ setup(name="sagbescheid",
                    "Programming Language :: Python :: 2.7"],
       cmdclass={"version": Version, "sdist": sdist, "build": build},
       description="",
-      long_description=open("README.rst").read()
+      long_description=open("README.rst").read(),
+      install_requires=["Twisted[tls]==15.1.0",
+                        "txdbus==1.0.11",
+                        "zope.interface==4.1.2",
+                        "enum34==1.0.4"],
       )
