@@ -2,4 +2,4 @@
 sagbescheid
 ===============================
 
-* Documentation: http://sagbescheid.rtfd.org
+* Documentation: https://sagbescheid.rtfd.org
