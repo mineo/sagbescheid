@@ -30,14 +30,15 @@ class SMTPNotifier(object):
         self.host = args.smtp_host
         self.port = args.smtp_port
 
-    @staticmethod
-    def _build_message_file(msg):
+    def _build_message_file(self, msg):
         """
         :type msg: str
         """
         msg = msg
         message = MIMEText(msg, _subtype='plain', _charset='utf-8')
         message['Subject'] = "sagbescheid service notification"
+        message['From'] = self.from_
+        message['To'] = self.to
         return StringIO(message.as_string())
 
     def _send_mail(self, msg):
