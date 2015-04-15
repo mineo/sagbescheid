@@ -36,7 +36,7 @@ def main():
     observer.start()
     logging.basicConfig(level=logging.INFO)
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(fromfile_prefix_chars='@')
     available_notifiers = list(get_all_notifiers())
     available_notifier_names = map(attrgetter("name"),
                                    available_notifiers)
