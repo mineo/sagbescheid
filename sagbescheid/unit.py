@@ -20,6 +20,7 @@ PATH_REPLACEMENTS = {
 }
 
 SYSTEMD_BUS_NAME = "org.freedesktop.systemd1"
+UNIT_NODE_PREFIX = "org/freedesktop/systemd1/unit/"
 UNIT_PATH_PREFIX = "/org/freedesktop/systemd1/unit/"
 
 
@@ -104,7 +105,7 @@ def get_all_unit_paths(con):
         parser=parser):
         if elem.tag == "node":
             if ("name" in elem.attrib and
-                elem.attrib["name"].startswith(UNIT_PATH_PREFIX)):
+                elem.attrib["name"].startswith(UNIT_NODE_PREFIX)):
                 units.append(elem.attrib["name"])
 
     defer.returnValue(units)
