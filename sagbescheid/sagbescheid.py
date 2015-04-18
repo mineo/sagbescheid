@@ -45,6 +45,8 @@ def build_arg_parser():
     parser.add_argument("--notifier", action="append", default=[],
                         choices=available_notifier_names,
                         help="A notifier to enable.")
+    parser.add_argument("-v", "--verbose", action="store_true", default=False,
+                        help="Be more verbose.")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--unit", action="append",
                        help="A unit to monitor.")
@@ -62,10 +64,13 @@ def build_arg_parser():
 def main():
     observer = log.PythonLoggingObserver(loggerName="")
     observer.start()
-    logging.basicConfig(level=logging.INFO)
 
     parser = build_arg_parser()
     args = parser.parse_args()
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     for notifier in get_enabled_notifiers(args.notifier):
         notifier.handle_arguments(args)
 

@@ -76,6 +76,7 @@ class Unit(object):
         logging.debug("Connecting %s", self.object_path)
         robj = yield con.getRemoteObject(SYSTEMD_BUS_NAME, self.object_path)
         state = yield robj.callRemote("Get", UNIT_IFACE, "ActiveState")
+        logging.debug("The state of %s is %s", self.object_path, state)
         self.state = State[state]
         robj.notifyOnSignal("PropertiesChanged", self.onSignal)
 
