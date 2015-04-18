@@ -10,7 +10,7 @@ def is_failure(state):
 
 
 def is_normal_start(old, new):
-    return old == State.inactive and new == State.active
+    return old in (State.activating, State.inactive) and new == State.active
 
 
 def is_normal_stop(old, new):

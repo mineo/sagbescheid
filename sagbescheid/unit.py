@@ -20,7 +20,7 @@ PATH_REPLACEMENTS = {
 }
 
 SYSTEMD_BUS_NAME = "org.freedesktop.systemd1"
-OBJECT_PATH_TEMPLATE = "/org/freedesktop/systemd1/unit/"
+UNIT_PATH_PREFIX = "/org/freedesktop/systemd1/unit/"
 
 
 def make_path(unit):
@@ -48,7 +48,7 @@ class Unit(object):
         :type name: str
         :type notifier_registry: :class:`sagbescheid.notifier.NotifierRegistry`
         """
-        name = OBJECT_PATH_TEMPLATE + make_path(name)
+        name = UNIT_PATH_PREFIX + make_path(name)
         return cls(name, notifier_registry)
 
     @classmethod
@@ -70,6 +70,8 @@ class Unit(object):
         :type con: :class:`txdbus.client.DBusClientConnection`
         """
         robj = yield con.getRemoteObject(SYSTEMD_BUS_NAME, self.object_path)
+        state = yield robj.callRemote("Get", UNIT_IFACE, "ActiveState")
+        self.state = State[state]
         robj.notifyOnSignal("PropertiesChanged", self.onSignal)
 
     def onSignal(self, iface, changed, invalidated):
@@ -101,7 +103,8 @@ def get_all_unit_paths(con):
             introspection_xml.encode("utf-8")),
         parser=parser):
         if elem.tag == "node":
-            if "name" in elem.attrib:
+            if ("name" in elem.attrib and
+                elem.attrib["name"].startswith(UNIT_PATH_PREFIX)):
                 units.append(elem.attrib["name"])
 
     defer.returnValue(units)
