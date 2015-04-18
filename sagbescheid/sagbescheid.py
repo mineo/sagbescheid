@@ -11,7 +11,7 @@ from functools import partial
 from operator import attrgetter
 from twisted.internet import defer, reactor
 from twisted.python import log
-from txdbus import client
+from txdbus import client, error
 
 
 @defer.inlineCallbacks
@@ -21,14 +21,19 @@ def setup(args):
     """
     con = yield client.connect(reactor, "system")
     registry = NotifierRegistry(get_enabled_notifiers(args.notifier))
-    if args.all_units:
-        # Get the names of all units
-        units = yield get_all_unit_paths(con)
-        for unit in units:
-            yield Unit.from_child_object_path(unit, registry).connect(con)
-    else:
-        for unit in args.unit:
-            Unit.from_unit_filename(unit, registry).connect(con)
+    try:
+        if args.all_units:
+            # Get the names of all units
+            units = yield get_all_unit_paths(con)
+            for unit in units:
+                yield Unit.from_child_object_path(unit, registry).connect(con)
+        else:
+            for unit in args.unit:
+                Unit.from_unit_filename(unit, registry).connect(con)
+    except error.DBusException:
+        logging.exception(
+            "The following exception occured during the initial setup:")
+        reactor.stop()
 
 
 def build_arg_parser():
