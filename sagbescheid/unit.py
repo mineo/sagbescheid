@@ -2,6 +2,9 @@
 # coding: utf-8
 # Copyright © 2015 Wieland Hoffmann
 # License: MIT, see LICENSE for details
+import logging
+
+
 from .state import State
 from . import state_helpers
 from io import BytesIO
@@ -70,6 +73,7 @@ class Unit(object):
 
         :type con: :class:`txdbus.client.DBusClientConnection`
         """
+        logging.debug("Connecting %s", self.object_path)
         robj = yield con.getRemoteObject(SYSTEMD_BUS_NAME, self.object_path)
         state = yield robj.callRemote("Get", UNIT_IFACE, "ActiveState")
         self.state = State[state]
@@ -82,6 +86,8 @@ class Unit(object):
             if new_raw_state is None:
                 return
 
+            logging.debug("%s: state change to %s, old was %s",
+                          self.object_path, new_raw_state, self.state)
             new_state = State[new_raw_state]
             self.notifier_registry.state_changed(self.object_path, self.state,
                                                  new_state)
@@ -104,8 +110,9 @@ def get_all_unit_paths(con):
             introspection_xml.encode("utf-8")),
         parser=parser):
         if elem.tag == "node":
-            if ("name" in elem.attrib and
-                elem.attrib["name"].startswith(UNIT_NODE_PREFIX)):
+            name = elem.attrib.get("name", None)
+            if name is not None and name.startswith(UNIT_NODE_PREFIX):
+                logging.debug("Found unit %s", name)
                 units.append(elem.attrib["name"])
 
     defer.returnValue(units)
