@@ -56,10 +56,14 @@ class IRCNotifierFactory(protocol.ReconnectingClientFactory):
     protocol = IRCNotifierBot
 
     def add_arguments(self, group):
-        group.add_argument("--irc-nick", action="store")
-        group.add_argument("--irc-channel", action="store")
-        group.add_argument("--irc-server", action="store")
-        group.add_argument("--irc-port", action="store", type=int, default=6667)
+        group.add_argument("--irc-nick", action="store",
+                           help="Nick for the bot")
+        group.add_argument("--irc-channel", action="store",
+                           help="Channel for the bot to join")
+        group.add_argument("--irc-server", action="store",
+                           help="IRC server address")
+        group.add_argument("--irc-port", action="store", type=int, default=6667,
+                           help="IRC server port")
 
     def handle_arguments(self, args):
         self.channel = args.irc_channel

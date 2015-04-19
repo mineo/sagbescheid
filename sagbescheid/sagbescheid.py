@@ -38,7 +38,8 @@ def setup(args):
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(prog='sagbescheid',
-                                     fromfile_prefix_chars='@')
+                                     fromfile_prefix_chars='@',
+                                     description='Monitor systemd unit states')
     available_notifiers = list(get_all_notifiers())
     available_notifier_names = map(attrgetter("name"),
                                    available_notifiers)
