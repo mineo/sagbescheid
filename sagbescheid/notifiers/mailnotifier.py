@@ -62,10 +62,6 @@ class SMTPNotifier(object):
             self._send_mail("%s entered failed state." % unit)
         elif state_helpers.is_recovery(old_state, new_state):
             self._send_mail("%s recovered." % unit)
-        elif state_helpers.is_normal_stop(old_state, new_state):
-            self._send_mail("%s stopped normally" % unit)
-        elif state_helpers.is_normal_start(old_state, new_state):
-            self._send_mail("%s started normally" % unit)
 
 
 smtp = SMTPNotifier()
