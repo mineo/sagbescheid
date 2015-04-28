@@ -5,8 +5,10 @@
 import argparse
 import logging
 
+from .argparse_ext import TestAction
 from .notifier import get_all_notifiers, get_enabled_notifiers, NotifierRegistry
-from .unit import get_all_unit_paths, Unit
+from .state import State
+from .unit import get_all_unit_paths, Unit, UNIT_IFACE
 from functools import partial
 from operator import attrgetter
 from twisted.internet import defer, reactor
@@ -36,6 +38,22 @@ def setup(args):
         reactor.stop()
 
 
+def test(args):
+    registry = NotifierRegistry(get_enabled_notifiers(args.notifier))
+    units = []
+    for unit in args.unit:
+        units.append(Unit.from_unit_filename(unit, registry))
+
+    def emit_signals():
+        for unit in units:
+            unit.state = State[args.test_state_from]
+            change = {"ActiveState": args.test_state_to}
+            unit.onSignal(UNIT_IFACE, change, None)
+            reactor.callLater(2, reactor.stop)
+
+    reactor.callLater(2, emit_signals)
+
+
 def build_arg_parser():
     parser = argparse.ArgumentParser(prog='sagbescheid',
                                      fromfile_prefix_chars='@',
@@ -60,6 +78,21 @@ def build_arg_parser():
                                               "Arguments for the %s notifier" %
                                               notifier.name)
         notifier.add_arguments(arg_group)
+    test_group = parser.add_argument_group("Test notifications", """Send a test
+    notification for enabled units""")
+    test_group.add_argument("--test",
+                            action=TestAction,
+                            default=False,
+                            nargs=0,
+                            help="Enable testing mode")
+    test_group.add_argument("--test-state-from", action="store",
+                            choices=State.__members__.keys(),
+                            default="failed",
+                            help="The start state for all units")
+    test_group.add_argument("--test-state-to", action="store",
+                            choices=State.__members__.keys(),
+                            default="active",
+                            help="The state units will transition to")
     return parser
 
 
@@ -76,7 +109,10 @@ def main():
     for notifier in get_enabled_notifiers(args.notifier):
         notifier.handle_arguments(args)
 
-    reactor.callWhenRunning(partial(setup, args))
+    if not args.test:
+        reactor.callWhenRunning(partial(setup, args))
+    else:
+        test(args)
     reactor.run()
 
 if __name__ == "__main__":
