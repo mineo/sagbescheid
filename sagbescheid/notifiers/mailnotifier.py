@@ -7,7 +7,7 @@ from .. import state_helpers
 from email.mime.text import MIMEText
 from StringIO import StringIO
 from twisted.internet import defer, reactor
-from twisted.mail.smtp import SMTPSenderFactory, ESMTPSenderFactory
+from twisted.mail.smtp import messageid, SMTPSenderFactory, ESMTPSenderFactory
 from twisted.plugin import IPlugin
 from zope.interface.declarations import implementer
 
@@ -39,6 +39,7 @@ class SMTPNotifier(object):
         message['Subject'] = "sagbescheid service notification"
         message['From'] = self.from_
         message['To'] = self.to
+        message['Message-ID'] = messageid
         return StringIO(message.as_string())
 
     def _send_mail(self, msg):
