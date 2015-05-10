@@ -39,7 +39,7 @@ class SMTPNotifier(object):
         message['Subject'] = "sagbescheid service notification"
         message['From'] = self.from_
         message['To'] = self.to
-        message['Message-ID'] = messageid
+        message['Message-ID'] = messageid()
         return StringIO(message.as_string())
 
     def _send_mail(self, msg):
