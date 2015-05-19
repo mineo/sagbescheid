@@ -17,16 +17,23 @@ class SMTPNotifier(object):
     description = "Send notification emails via twisted.mail.smtp.sendmail"
 
     def add_arguments(self, group):
-        group.add_argument("--smtp-from", action="store")
-        group.add_argument("--smtp-to", action="store")
-        group.add_argument("--smtp-user", action="store", default=None)
-        group.add_argument("--smtp-password", action="store", default=None)
-        group.add_argument("--smtp-host", action="store")
-        group.add_argument("--smtp-port", action="store", type=int)
+        group.add_argument("--smtp-from", action="store",
+                           help="The address to use in the From: header")
+        group.add_argument("--smtp-to", action="store",
+                           help="The address to use in the To: header")
+        group.add_argument("--smtp-user", action="store", default=None,
+                           help="The SMTP username")
+        group.add_argument("--smtp-password", action="store", default=None,
+                           help="The SMTP password")
+        group.add_argument("--smtp-host", action="store",
+                           help="The SMTP host")
+        group.add_argument("--smtp-port", action="store", type=int,
+                           help="The SMTP port")
         group.add_argument("--smtp-require-authentication", action="store_true",
-                           default=False)
+                           default=False, help="Require authentication")
         group.add_argument("--smtp-require-transport-security",
-                           action="store_true", default=False)
+                           action="store_true", default=False,
+                           help="Require STARTTLS")
 
     def handle_arguments(self, args):
         self.from_ = args.smtp_from
