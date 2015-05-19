@@ -5,8 +5,7 @@ pkgdesc=""
 arch=("any")
 url="https://github.com/mineo/sagbescheid"
 license=('MIT')
-# source=('git+https://github.com/mineo/sagbescheid')
-source=('git+file:///home/wieland/dev/sagbescheid')
+source=('git+https://github.com/mineo/sagbescheid')
 md5sums=('SKIP')
 depends=('python2' 'python2-twisted>=15.2.0' 'python2-txdbus')
 makedepends=('git')
