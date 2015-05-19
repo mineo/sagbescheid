@@ -1,0 +1,12 @@
+[Unit]
+Description=Sagbescheid notification daemon
+After=network.target
+
+[Service]
+User=nobody
+Type=simple
+EnvironmentFile=/etc/conf.d/sagbescheid
+ExecStart=/usr/bin/python2 -m sagbescheid $SAGBESCHEID_ARGS
+
+[Install]
+WantedBy=multi-user.target
