@@ -6,8 +6,7 @@ from ..notifier import INotifier
 from .. import state_helpers
 from email.mime.text import MIMEText
 from StringIO import StringIO
-from twisted.internet import defer, reactor
-from twisted.mail.smtp import messageid, SMTPSenderFactory, ESMTPSenderFactory
+from twisted.mail.smtp import (messageid, sendmail)
 from twisted.plugin import IPlugin
 from zope.interface.declarations import implementer
 
@@ -15,20 +14,29 @@ from zope.interface.declarations import implementer
 @implementer(IPlugin, INotifier)
 class SMTPNotifier(object):
     name = "smtp"
-    description = "Send notification emails via SMTP"
-    factory = SMTPSenderFactory
+    description = "Send notification emails via twisted.mail.smtp.sendmail"
 
     def add_arguments(self, group):
         group.add_argument("--smtp-from", action="store")
         group.add_argument("--smtp-to", action="store")
+        group.add_argument("--smtp-user", action="store", default=None)
+        group.add_argument("--smtp-password", action="store", default=None)
         group.add_argument("--smtp-host", action="store")
         group.add_argument("--smtp-port", action="store", type=int)
+        group.add_argument("--smtp-require-authentication", action="store_true",
+                           default=False)
+        group.add_argument("--smtp-require-transport-security",
+                           action="store_true", default=False)
 
     def handle_arguments(self, args):
         self.from_ = args.smtp_from
         self.to = args.smtp_to
+        self.user = args.smtp_user
+        self.password = args.smtp_password
         self.host = args.smtp_host
         self.port = args.smtp_port
+        self.auth = args.smtp_require_authentication
+        self.transport_sec = args.smtp_require_transport_security
 
     def _build_message_file(self, msg):
         """
@@ -46,10 +54,11 @@ class SMTPNotifier(object):
         """
         :type msg: str
         """
-        d = defer.Deferred()
         message = self._build_message_file(msg)
-        f = self.factory(self.from_, [self.to], message, d)
-        reactor.connectTCP(self.host, self.port, f)
+        sendmail(self.host, self.from_, [self.to], message, port=self.port,
+                 username=self.user, password=self.password,
+                 requireAuthentication=self.auth,
+                 requireTransportSecurity=self.transport_sec)
 
     def state_changed(self, unit, old_state, new_state):
         """
@@ -64,39 +73,4 @@ class SMTPNotifier(object):
         elif state_helpers.is_recovery(old_state, new_state):
             self._send_mail("%s recovered." % unit)
 
-
-smtp = SMTPNotifier()
-
-
-class ESMTPNotifier(SMTPNotifier):
-    name = "esmtp"
-    description = "Send notification emails via ESMTP"
-    factory = ESMTPSenderFactory
-
-    def add_arguments(self, group):
-        group.add_argument("--esmtp-from", action="store")
-        group.add_argument("--esmtp-to", action="store")
-        group.add_argument("--esmtp-user", action="store")
-        group.add_argument("--esmtp-password", action="store")
-        group.add_argument("--esmtp-host", action="store")
-        group.add_argument("--esmtp-port", action="store", type=int)
-
-    def handle_arguments(self, args):
-        self.from_ = args.esmtp_from
-        self.to = args.esmtp_to
-        self.user = args.esmtp_user
-        self.password = args.esmtp_password
-        self.host = args.esmtp_host
-        self.port = args.esmtp_port
-
-    def _send_mail(self, msg):
-        """
-        :type msg: str
-        """
-        d = defer.Deferred()
-        message = self._build_message_file(msg)
-        f = self.factory(self.user, self.password, self.from_, [self.to],
-                         message, d, requireTransportSecurity=True)
-        reactor.connectTCP(self.host, self.port, f)
-
-esmtp = ESMTPNotifier()
+sendmailnotifier = SMTPNotifier()
