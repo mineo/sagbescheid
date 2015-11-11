@@ -36,6 +36,7 @@ class IRCNotifierBot(IRCClient):
         :type old_state: :class:`sagbescheid.state.State`
         :type new_state: :class:`sagbescheid.state.State`
         """
+        unit = unit.encode("utf-8")
         if state_helpers.is_ongoing_failure(old_state, new_state):
             self._msg_channel("%s is still failing." % unit)
         elif state_helpers.is_failure(new_state):

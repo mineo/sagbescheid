@@ -23,7 +23,6 @@ PATH_REPLACEMENTS = {
 }
 
 SYSTEMD_BUS_NAME = "org.freedesktop.systemd1"
-UNIT_NODE_PREFIX = "org/freedesktop/systemd1/unit/"
 UNIT_PATH_PREFIX = "/org/freedesktop/systemd1/unit/"
 
 
@@ -64,7 +63,6 @@ class Unit(object):
         :type name: str
         :type notifier_registry: :class:`sagbescheid.notifier.NotifierRegistry`
         """
-        name = "/" + name
         return cls(name, notifier_registry)
 
     @defer.inlineCallbacks
@@ -103,17 +101,13 @@ class Unit(object):
 
 @defer.inlineCallbacks
 def get_all_unit_paths(con):
-    robj = yield con.getRemoteObject(SYSTEMD_BUS_NAME, "/")
-    introspection_xml = yield robj.callRemote("Introspect")
-    parser = ElementTree.XMLParser()
+    robj = yield con.getRemoteObject(SYSTEMD_BUS_NAME, "/org/freedesktop/systemd1")
+    dbus_units = yield robj.callRemote("ListUnits",
+                                       interface="org.freedesktop.systemd1.Manager")
     units = []
-    for _, elem in ElementTree.iterparse(BytesIO(
-            introspection_xml.encode("utf-8")),
-        parser=parser):
-        if elem.tag == "node":
-            name = elem.attrib.get("name", None)
-            if name is not None and name.startswith(UNIT_NODE_PREFIX):
-                logging.debug("Found unit %s", name)
-                units.append(elem.attrib["name"])
+    for elem in dbus_units:
+        unit_name = elem[6]
+        logging.info("Discovered a new unit at %s", unit_name)
+        units.append(unit_name)
 
     defer.returnValue(units)
