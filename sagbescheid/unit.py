@@ -7,8 +7,6 @@ import logging
 
 from .state import State
 from . import state_helpers
-from io import BytesIO
-from xml.etree import ElementTree
 from twisted.internet import defer
 
 
