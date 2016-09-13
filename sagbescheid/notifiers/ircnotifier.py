@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright © 2015 Wieland Hoffmann
+# Copyright © 2015, 2016 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 from ..notifier import INotifier
-from ..version import __version__
+from ..version import version
 from .. import state_helpers
 from twisted.internet import protocol, reactor
 from twisted.plugin import IPlugin
@@ -13,7 +13,7 @@ from zope.interface.declarations import implementer
 
 class IRCNotifierBot(IRCClient):
     versionName = "sagbescheid"
-    versionNum = __version__
+    versionNum = version
     lineRate = 1
 
     @property
