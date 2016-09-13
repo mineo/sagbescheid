@@ -101,9 +101,9 @@ class Unit(object):
 
 @defer.inlineCallbacks
 def get_all_unit_paths(con):
-    robj = yield con.getRemoteObject(SYSTEMD_BUS_NAME, "/org/freedesktop/systemd1")
+    robj = yield con.getRemoteObject(SYSTEMD_BUS_NAME, "/org/freedesktop/systemd1")  # noqa
     dbus_units = yield robj.callRemote("ListUnits",
-                                       interface="org.freedesktop.systemd1.Manager")
+                                       interface="org.freedesktop.systemd1.Manager")  # noqa
     units = []
     for elem in dbus_units:
         unit_name = elem[6]
