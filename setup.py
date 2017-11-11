@@ -20,7 +20,7 @@ setup(name="sagbescheid",
       install_requires=["Twisted[tls]>=15.2.0",
                         "txdbus==1.0.11",
                         "zope.interface==4.1.2",
-                        "enum34==1.0.4"],
+                        "enum34==1.1.6"],
       setup_requires=["setuptools_scm"],
       use_scm_version={"write_to": "sagbescheid/version.py"},
       extras_require={
