@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright © 2015 Wieland Hoffmann
+# Copyright © 2015, 2017 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 from ..notifier import INotifier
 from .. import state_helpers
@@ -67,17 +67,46 @@ class SMTPNotifier(object):
                  requireAuthentication=self.auth,
                  requireTransportSecurity=self.transport_sec)
 
-    def state_changed(self, unit, old_state, new_state):
+    def normal_start(self, object_path):
         """
-        :type unit: str
-        :type old_state: :class:`sagbescheid.state.State`
-        :type new_state: :class:`sagbescheid.state.State`
+        :param self:
+        :param object_path:
         """
-        if state_helpers.is_ongoing_failure(old_state, new_state):
-            self._send_mail("%s is still failing." % unit)
-        elif state_helpers.is_failure(new_state):
-            self._send_mail("%s entered failed state." % unit)
-        elif state_helpers.is_recovery(old_state, new_state):
-            self._send_mail("%s recovered." % unit)
+        pass
+
+    def normal_stop(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
+
+    def failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        self._send_mail("%s failed." % object_path)
+
+    def ongoing_failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        self._send_mail("%s is still failing." % object_path)
+
+    def recovery(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        self._send_mail("%s recovered." % object_path)
+
+    def change_from_unknown(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
 
 sendmailnotifier = SMTPNotifier()

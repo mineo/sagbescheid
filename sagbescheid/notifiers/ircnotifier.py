@@ -1,14 +1,29 @@
 #!/usr/bin/env python
 # coding: utf-8
 # Copyright © 2015, 2016 Wieland Hoffmann
+# Copyright © 2015, 2017 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 from ..notifier import INotifier
 from ..version import version
-from .. import state_helpers
+from functools import wraps
 from twisted.internet import protocol, reactor
 from twisted.plugin import IPlugin
 from twisted.words.protocols.irc import IRCClient
 from zope.interface.declarations import implementer
+
+
+def passthrough_to_client(func):
+    """
+    :param func:
+    """
+    @wraps(func)
+    def wrapper(self, object_path):
+        client = self.prot
+        event_name = func.__name__
+        method = getattr(client, event_name)
+        method(object_path)
+
+    return wrapper
 
 
 class IRCNotifierBot(IRCClient):
@@ -30,23 +45,47 @@ class IRCNotifierBot(IRCClient):
         """
         self.msg(self.factory.channel, msg)
 
-    def state_changed(self, unit, old_state, new_state):
+    def normal_start(self, object_path):
         """
-        :type unit: str
-        :type old_state: :class:`sagbescheid.state.State`
-        :type new_state: :class:`sagbescheid.state.State`
+        :param self:
+        :param object_path:
         """
-        unit = unit.encode("utf-8")
-        if state_helpers.is_ongoing_failure(old_state, new_state):
-            self._msg_channel("%s is still failing." % unit)
-        elif state_helpers.is_failure(new_state):
-            self._msg_channel("%s entered failed state." % unit)
-        elif state_helpers.is_recovery(old_state, new_state):
-            self._msg_channel("%s recovered." % unit)
-        elif state_helpers.is_normal_stop(old_state, new_state):
-            self._msg_channel("%s stopped normally" % unit)
-        elif state_helpers.is_normal_start(old_state, new_state):
-            self._msg_channel("%s started normally" % unit)
+        self._msg_channel("%s started normally." % object_path)
+
+    def normal_stop(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        self._msg_channel("%s stopped normally." % object_path)
+
+    def failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        self._msg_channel("%s failed." % object_path)
+
+    def ongoing_failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        self._msg_channel("%s is still failing." % object_path)
+
+    def recovery(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        self._msg_channel("%s recovered." % object_path)
+
+    def change_from_unknown(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
 
 
 @implementer(IPlugin, INotifier)
@@ -73,13 +112,51 @@ class IRCNotifierFactory(protocol.ReconnectingClientFactory):
         self.server = args.irc_server
         reactor.connectTCP(self.server, self.port, self)
 
-    def state_changed(self, *args):
-        """Pass state change events through to the client.
-        """
-        self.prot.state_changed(*args)
-
     def buildProtocol(self, addr):
         self.prot = protocol.ReconnectingClientFactory.buildProtocol(self, addr)
         return self.prot
+
+    @passthrough_to_client
+    def normal_start(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+
+    @passthrough_to_client
+    def normal_stop(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+
+    @passthrough_to_client
+    def failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+
+    @passthrough_to_client
+    def ongoing_failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+
+    @passthrough_to_client
+    def recovery(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+
+    @passthrough_to_client
+    def change_from_unknown(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+
 
 obj = IRCNotifierFactory()

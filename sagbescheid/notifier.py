@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright © 2015 Wieland Hoffmann
+# Copyright © 2015, 2017 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 from . import notifiers
+
 from twisted.plugin import getPlugins
 from zope.interface import Attribute, Interface
 
@@ -23,12 +24,47 @@ class INotifier(Interface):
         :type: :class:`argparse.Namespace`
         """
 
-    def state_changed(unit, old_state, new_state):
+    def normal_start(self, object_path):
         """
-        :type unit: str
-        :type old_state: :class:`sagbescheid.state.State`
-        :type new_state: :class:`sagbescheid.state.State`
+        :param self:
+        :param object_path:
         """
+        pass
+
+    def normal_stop(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
+
+    def failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
+
+    def ongoing_failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
+
+    def recovery(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
+
+    def change_from_unknown(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
 
 
 class NotifierRegistry(object):
@@ -40,10 +76,15 @@ class NotifierRegistry(object):
         for notifier in notifiers:
             self.notifiers[notifier.name] = notifier
 
-    def state_changed(self, unit, old_state, new_state):
-        for notifier in self.notifiers.values():
-            notifier.state_changed(unit, old_state, new_state)
-
+    def handle_event(self, object_path, event_name):
+        """
+        :param self:
+        :param object_path:
+        :param event_name:
+        """
+        for notifier in self.notifiers.itervalues():
+            method = getattr(notifier, event_name)
+            method(object_path)
 
 def get_all_notifiers():
     return getPlugins(INotifier, notifiers)

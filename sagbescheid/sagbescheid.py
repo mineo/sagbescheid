@@ -1,13 +1,12 @@
 #!/usr/bin/env python2
 # coding: utf-8
-# Copyright © 2015, Wieland Hoffmann
+# Copyright © 2015, 2017, Wieland Hoffmann
 # License: MIT, see LICENSE for details
 import argparse
 import logging
 
 from .argparse_ext import TestAction
 from .notifier import get_all_notifiers, get_enabled_notifiers, NotifierRegistry
-from .state import State
 from .unit import get_all_unit_paths, Unit, UNIT_IFACE
 from functools import partial
 from operator import attrgetter
@@ -46,7 +45,12 @@ def test(args):
 
     def emit_signals():
         for unit in units:
-            unit.state = State[args.test_state_from]
+            # Set the initial state. We can enter every state because the
+            # default state of a unit is unknown.
+            initial_state_meth = getattr(
+                unit, "become_{}".format(args.test_state_from))
+            initial_state_meth()
+
             change = {"ActiveState": args.test_state_to}
             unit.onSignal(UNIT_IFACE, change, None)
             reactor.callLater(2, reactor.stop)
@@ -86,11 +90,11 @@ def build_arg_parser():
                             nargs=0,
                             help="Enable testing mode")
     test_group.add_argument("--test-state-from", action="store",
-                            choices=State.__members__.keys(),
+            #                choices=State.__members__.keys(),
                             default="failed",
                             help="The start state for all units")
     test_group.add_argument("--test-state-to", action="store",
-                            choices=State.__members__.keys(),
+            #                choices=State.__members__.keys(),
                             default="active",
                             help="The state units will transition to")
     return parser
@@ -114,6 +118,7 @@ def main():
     else:
         test(args)
     reactor.run()
+
 
 if __name__ == "__main__":
     main()

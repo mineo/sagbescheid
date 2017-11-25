@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright © 2015 Wieland Hoffmann
+# Copyright © 2015, 2017 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 import logging
 
@@ -28,20 +28,47 @@ class LoggingNotifier(object):
         level = getattr(logging, args.logging_level.upper())
         logging.basicConfig(level=level)
 
-    def state_changed(self, unit, old_state, new_state):
+    def normal_start(self, object_path):
         """
-        :type unit: str
-        :type old_state: :class:`sagbescheid.state.State`
-        :type new_state: :class:`sagbescheid.state.State`
+        :param self:
+        :param object_path:
         """
-        if state_helpers.is_ongoing_failure(old_state, new_state):
-            logging.info("%s is still failing.", unit)
-        elif state_helpers.is_failure(new_state):
-            logging.info("%s entered failed state.", unit)
-        elif state_helpers.is_recovery(old_state, new_state):
-            logging.info("%s recovered.", unit)
-        else:
-            logging.info("%s changed from %s to %s", unit, old_state,
-                         new_state)
+        logging.info("%s started normally.", object_path)
+
+    def normal_stop(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        logging.info("%s stopped normally.", object_path)
+
+    def failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        logging.info("%s failed.", object_path)
+
+    def ongoing_failure(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        logging.info("%s is still failing.", object_path)
+
+    def recovery(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        logging.info("%s recovered.", object_path)
+
+    def change_from_unknown(self, object_path):
+        """
+        :param self:
+        :param object_path:
+        """
+        pass
+
 
 obj = LoggingNotifier()
