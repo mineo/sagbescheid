@@ -7,7 +7,7 @@ url="https://github.com/mineo/sagbescheid"
 license=('MIT')
 source=('git+https://github.com/mineo/sagbescheid')
 md5sums=('SKIP')
-depends=('python2' 'python2-twisted>=15.2.0' 'python2-txdbus')
+depends=('python2' 'python2-twisted>=15.2.0' 'python2-systemd' 'python2-txdbus')
 makedepends=('git')
 backup=('etc/conf.d/sagbescheid')
 
