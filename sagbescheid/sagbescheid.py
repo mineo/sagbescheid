@@ -10,9 +10,25 @@ from .notifier import get_all_notifiers, get_enabled_notifiers, NotifierRegistry
 from .unit import get_all_unit_paths, Unit, UNIT_IFACE
 from functools import partial
 from operator import attrgetter
+from sys import exit
+from systemd.daemon import booted, notify
 from twisted.internet import defer, reactor
 from twisted.python import log
 from txdbus import client, error
+
+
+def systemd_ready():
+    """Signal to systemd that the service has successfully started.
+    """
+    notify("READY=1")
+
+
+def systemd_status(message):
+    """Send a status `message` to systemd.
+
+    :type message: str
+    """
+    notify("STATUS={message}".format(message=message))
 
 
 @defer.inlineCallbacks
@@ -28,9 +44,13 @@ def setup(args):
             units = yield get_all_unit_paths(con)
             for unit in units:
                 yield Unit.from_child_object_path(unit, registry).connect(con)
+            systemd_ready()
+            systemd_status("Monitoring {} units.".format(len(units)))
         else:
             for unit in args.unit:
                 Unit.from_unit_filename(unit, registry).connect(con)
+            systemd_ready()
+            systemd_status("Monitoring {}.".format(args.unit))
     except error.DBusException:
         logging.exception(
             "The following exception occured during the initial setup:")
@@ -117,6 +137,7 @@ def main():
         reactor.callWhenRunning(partial(setup, args))
     else:
         test(args)
+    notify("STATUS=Discovering units")
     reactor.run()
 
 

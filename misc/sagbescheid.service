@@ -4,7 +4,8 @@ After=network.target
 
 [Service]
 User=nobody
-Type=simple
+Type=notify
+NotifyAccess=main
 EnvironmentFile=/etc/conf.d/sagbescheid
 ExecStart=/usr/bin/python2 -m sagbescheid $SAGBESCHEID_ARGS
 
