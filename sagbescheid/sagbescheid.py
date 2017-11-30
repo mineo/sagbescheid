@@ -137,7 +137,7 @@ def main():
         reactor.callWhenRunning(partial(setup, args))
     else:
         test(args)
-    notify("STATUS=Discovering units")
+    systemd_status("Discovering units")
     reactor.run()
 
 
