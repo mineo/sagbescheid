@@ -142,4 +142,6 @@ def main():
 
 
 if __name__ == "__main__":
+    if not booted():
+        exit("This system doesn't run systemd!")
     main()
