@@ -1,5 +1,5 @@
 pkgname=sagbescheid-git
-pkgver=0.1.0.15.g5b176f6
+pkgver=0.3.0.5.gb7beb1c
 pkgrel=1
 pkgdesc=""
 arch=("any")
