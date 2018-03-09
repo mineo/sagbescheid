@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright © 2015, 2017 Wieland Hoffmann
+# Copyright © 2015, 2017, 2018 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 import logging
 
@@ -314,6 +314,8 @@ class Unit(object):
     deactivating.upon(become_reloading, enter=reloading,
                       outputs=[])
     deactivating.upon(become_activating, enter=activating,
+                      outputs=[])
+    deactivating.upon(become_deactivating, enter=deactivating,
                       outputs=[])
 
 
