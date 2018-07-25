@@ -247,6 +247,8 @@ class Unit(object):
     active.upon(become_active, enter=active,
                 outputs=[])
 
+    active.upon(become_activating, enter=activating,
+                outputs=[])
     active.upon(become_deactivating, enter=deactivating,
                 outputs=[])
     active.upon(become_inactive, enter=inactive,
