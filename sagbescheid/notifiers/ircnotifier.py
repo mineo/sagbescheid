@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright © 2015, 2016 Wieland Hoffmann
-# Copyright © 2015, 2017 Wieland Hoffmann
+# Copyright © 2015, 2016, 2017, 2018 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 from ..notifier import INotifier
 from ..version import version
@@ -36,6 +35,7 @@ class IRCNotifierBot(IRCClient):
         return self.factory.nick
 
     def signedOn(self):
+        self.factory.resetDelay()
         self.join(self.factory.channel)
 
     def _msg_channel(self, msg):
