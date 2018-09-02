@@ -11,24 +11,39 @@ from .unit import get_all_unit_paths, Unit, UNIT_IFACE
 from functools import partial
 from operator import attrgetter
 from sys import exit
-from systemd.daemon import booted, notify
 from twisted.internet import defer, reactor
 from twisted.python import log
 from txdbus import client, error
 
+try:
+    from systemd.daemon import booted, notify
 
-def systemd_ready():
-    """Signal to systemd that the service has successfully started.
-    """
-    notify("READY=1")
+    def systemd_ready():
+        """Signal to systemd that the service has successfully started.
+        """
+        notify("READY=1")
 
+    def systemd_status(message):
+        """Send a status `message` to systemd.
 
-def systemd_status(message):
-    """Send a status `message` to systemd.
+        :type message: str
+        """
+        notify("STATUS={message}".format(message=message))
+except ImportError:
+    # The systemd-python package can't be installed successfully on
+    # ReadTheDocs. Just ignore its functions during doc building.
+    def systemd_ready():
+        """Signal to systemd that the service has successfully started.
+        """
+        pass
 
-    :type message: str
-    """
-    notify("STATUS={message}".format(message=message))
+    def systemd_status(message):
+        """Send a status `message` to systemd.
+
+        :type message: str
+        """
+        pass
+
 
 
 @defer.inlineCallbacks
