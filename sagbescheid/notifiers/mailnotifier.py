@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright © 2015, 2017 Wieland Hoffmann
+# Copyright © 2015, 2017, 2018 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 from ..notifier import INotifier
-from .. import state_helpers
 from email.mime.text import MIMEText
 from StringIO import StringIO
 from twisted.mail.smtp import (messageid, sendmail)
@@ -108,5 +107,6 @@ class SMTPNotifier(object):
         :param object_path:
         """
         pass
+
 
 sendmailnotifier = SMTPNotifier()
