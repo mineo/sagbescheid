@@ -23,7 +23,7 @@ setup(name="sagbescheid",
                         "automat==0.7.0",
                         "zope.interface==4.6.0",
                         "systemd-python==234",
-                        "enum34==1.1.6"],
+                        "enum34==1.1.6;python_version<'3.4'"],
       setup_requires=["setuptools_scm"],
       use_scm_version={"write_to": "sagbescheid/version.py"},
       extras_require={
