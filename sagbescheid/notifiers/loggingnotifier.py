@@ -6,7 +6,6 @@ import logging
 
 
 from ..notifier import INotifier
-from .. import state_helpers
 from twisted.plugin import IPlugin
 from zope.interface.declarations import implementer
 
