@@ -86,6 +86,7 @@ class NotifierRegistry(object):
             method = getattr(notifier, event_name)
             method(object_path)
 
+
 def get_all_notifiers():
     return getPlugins(INotifier, notifiers)
 

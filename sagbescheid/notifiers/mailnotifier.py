@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright © 2015, 2017, 2018 Wieland Hoffmann
+# Copyright © 2015, 2017, 2018, 2019 Wieland Hoffmann
 # License: MIT, see LICENSE for details
 from ..notifier import INotifier
 from email.mime.text import MIMEText
-from StringIO import StringIO
+from six import StringIO
 from twisted.mail.smtp import (messageid, sendmail)
 from twisted.plugin import IPlugin
 from zope.interface.declarations import implementer
