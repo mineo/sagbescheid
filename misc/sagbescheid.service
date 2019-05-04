@@ -3,7 +3,7 @@ Description=Sagbescheid notification daemon
 After=network.target
 
 [Service]
-User=nobody
+DynamicUser=yes
 Type=notify
 NotifyAccess=main
 EnvironmentFile=/etc/conf.d/sagbescheid
