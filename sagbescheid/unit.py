@@ -279,7 +279,6 @@ class Unit(object):
                 outputs=[ongoing_failure])
     failed.upon(become_reloading, enter=reloading,
                 outputs=[])
-    # TODO: There should be a 'recovering' state here
     failed.upon(become_activating, enter=activating,
                 outputs=[])
     failed.upon(become_deactivating, enter=deactivating,
