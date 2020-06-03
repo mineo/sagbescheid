@@ -45,7 +45,6 @@ except ImportError:
         pass
 
 
-
 @defer.inlineCallbacks
 def setup(args):
     """
