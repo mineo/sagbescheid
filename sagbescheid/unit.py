@@ -5,7 +5,7 @@
 import logging
 
 
-from automat import MethodicalMachine
+from automat import MethodicalMachine, NoTransition
 from functools import wraps
 from twisted.internet import defer
 
@@ -98,7 +98,11 @@ class Unit(object):
                 return
 
             meth = getattr(self, "become_{}".format(new_raw_state))
-            meth()
+            try:
+                meth()
+            except NoTransition as e:
+                logging.exception("%s: %s", self.object_path, e)
+                raise
 
     setTheTracingFunction = _machine._setTrace
 
