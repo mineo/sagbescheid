@@ -264,6 +264,8 @@ class Unit(object):
 
     inactive.upon(become_active, enter=active,
                   outputs=[])
+    inactive.upon(become_inactive, enter=inactive,
+                  outputs=[])
     inactive.upon(become_failed, enter=failed,
                   outputs=[failure])
     inactive.upon(become_reloading, enter=reloading,
