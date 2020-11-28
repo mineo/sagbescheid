@@ -12,6 +12,8 @@ jobs:
             env: flake8
     steps:
     - uses: actions/checkout@v2
+    - name: update package index
+      run: sudo apt-get update
     - name: install libsystemd-dev
       run: sudo apt-get install libsystemd-dev
     - name: Set up Python ${{ matrix.python-version }}
