@@ -7,7 +7,7 @@ DynamicUser=yes
 Type=notify
 NotifyAccess=main
 EnvironmentFile=/etc/conf.d/sagbescheid
-ExecStart=/usr/bin/python2 -m sagbescheid $SAGBESCHEID_ARGS
+ExecStart=/usr/bin/python -m sagbescheid $SAGBESCHEID_ARGS
 
 [Install]
 WantedBy=multi-user.target

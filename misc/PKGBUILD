@@ -7,7 +7,7 @@ url="https://github.com/mineo/sagbescheid"
 license=('MIT')
 source=('git+https://github.com/mineo/sagbescheid')
 md5sums=('SKIP')
-depends=('python2' 'python2-twisted>=15.2.0' 'python2-systemd' 'python2-txdbus')
+depends=('python' 'python-twisted>=15.2.0' 'python-systemd' 'python-txdbus')
 makedepends=('git')
 backup=('etc/conf.d/sagbescheid')
 
@@ -18,7 +18,7 @@ pkgver(){
 
 package() {
   cd "${srcdir}/sagbescheid"
-  python2 setup.py install --root="$pkgdir" --optimize=1
+  python setup.py install --root="$pkgdir" --optimize=1
   install -d "${pkgdir}/usr/lib/systemd/system/"
   cp "misc/sagbescheid.service" "${pkgdir}/usr/lib/systemd/system/"
   install -d "${pkgdir}/etc/conf.d"
